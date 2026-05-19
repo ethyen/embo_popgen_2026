@@ -67,32 +67,32 @@ Click on any poster preview to open the full PDF version.
   <tr>
     <td align="center">
       <a href="https://www.associazionegeneticaitaliana.it/">
-        <img src="./img/AGI.png" alt="AGI" height="100" width="300">
+        <img src="./img/AGI.png" alt="AGI" height="120" width="300">
       </a>
     </td>
     <td width="50"></td>
     <td align="center">
       <a href="https://elixir-europe.org/about-us/who-we-are/nodes/italy">
-        <img src="./img/elixir.jpg" alt="ELIXIR" height="100" width="200">
+        <img src="./img/elixir.jpg" alt="ELIXIR" height="120" width="200">
       </a>
     </td>
     <td width="50"></td>
     <td align="center">
       <a href="https://www.recas-bari.it/index.php/en/">
-        <img src="./img/Recas.png" alt="RECAS" height="100" width="200">
+        <img src="./img/Recas.png" alt="RECAS" height="120" width="200">
       </a>
     </td>
   </tr>
   <tr>
     <td align="center">
       <a href="https://www.sibe-iseb.it">
-        <img src="./img/SIBE.png" alt="SIBE" height="100" width="200">
+        <img src="./img/SIBE.png" alt="SIBE" height="150" width="200">
       </a>
     </td>
     <td width="25"></td>
     <td align="center">
       <a href="http://www.geneticagraria.it/">
-        <img src="./img/SIGA.jpg" alt="SIGA" height="120" width="200">
+        <img src="./img/SIGA.jpg" alt="SIGA" height="150" width="200">
       </a>
     </td>
   </tr>
