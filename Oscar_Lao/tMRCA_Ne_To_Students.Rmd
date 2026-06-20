@@ -10,16 +10,22 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{r}
+library(tidyverse)
 library(ggplot2)
 rm(list=ls());
 ```
 
-##################################################################################
-#
+################################################################################## 
+
+# 
+
 # Create a model that has a constant population size with an instantaneous population
+
 # change. Sample two chromosomes.
-#
-##################################################################################
+
+# 
+
+################################################################################## 
 
 # Check the next code. Comment each line of the code
 
@@ -47,8 +53,11 @@ hist(sim_times, breaks = 50, col = "skyblue", main = "TMRCA Distribution", xlab 
 ```
 
 # Exercise 1). Run 50 times the model with Ne current = 5000, Ne ancestral = 100.
+
 # Change at random the time of change of Ne, from 10 to 1000 generations.
+
 # Run 10000 independent fragments. Read the output file and recover the tmrca
+
 # Compute the mean(log(tmrca)). Plot this value against the time of change of Ne
 
 ```{r}
@@ -67,10 +76,11 @@ for(i in 1:length(time.change))
 
 plot(time.change,mean.log.tmrca)
 ```
-# How do you interpret this result? Discuss it with your coleagues
 
+# How do you interpret this result? Discuss it with your colleagues
 
 # Change now so the Ne at present is smaller than in the past. For example
+
 # current Ne = 500, pastNe = 5000
 
 ```{r}
@@ -90,14 +100,19 @@ for(i in 1:length(time.change))
 plot(time.change,mean.log.tmrca)
 ```
 
-
 # What does this mean?
 
-##################################################################################
-# Exercise 2. Make the inference of the inverse coalescence rate, 
+################################################################################## 
+
+# Exercise 2. Make the inference of the inverse coalescence rate,
+
 # which can be approximated to Ne under the assumption of panmixia and lack of
+
 # population substructure.
-###################################################################################
+
+--\> errors (broken line) after 3000 because fewer fragments
+
+################################################################################### 
 
 ```{r}
 iicr <- function(data, time_bins = seq(0, 9000, by = 100))
@@ -145,8 +160,9 @@ data <- data.frame(Time_.gen.=d);
 iicr(data)
 ```
 
-
 # What if we have a large Ne at present and a small one in the past?
+
+--\> less noise recently
 
 ```{r}
 # current Ne = 10000
@@ -158,14 +174,24 @@ data <- data.frame(Time_.gen.=d);
 iicr(data)
 ```
 
-
 # Exercise 3. Goal: Analyze how the strength and timing of bottlenecks impact coalescence times.
+
 # Instructions:
-# Run  for different time_change_population_size values: seq(from = 50, to = 10000, by = 400) generations. Take Ne to be 1000, Ne bottleneck 500, time of bottleneck 10 generations
+
+# Run for different time_change_population_size values: seq(from = 50, to = 10000, by = 400) generations. Take Ne to be 1000, Ne bottleneck 500, time of bottleneck 10 generations
+
 # Plot average TMRCA for each combination.
+
 # Questions:
+
 # How does bottleneck timing affect TMRCA more than its severity?
+
+--\> if it's recent, some lineages will pass the bottleneck and coalesce later in the past
+
+--\> if else, most coalesce during the bottleneck (less info past the BN =\> more noise)
+
 # For which combination does TMRCA reduce the most?
+
 # Comment the code
 
 ```{r}
@@ -211,6 +237,7 @@ for(i in 1:length(time.change))
 plot(time.change,mean.log.tmrca)
 
 ```
+
 # How would you interprete it?
 
 # Exercise 3.1. How is the IICR if the Current Ne is 10000, Ne bottleneck is 1000, at time of 1000, and duration of bottleneck is 100 generations?
@@ -238,6 +265,7 @@ iicr(data);
 ```
 
 # Exercise 4: Population substructure makes everything harder
+
 # Track how long it takes for two lineages to coalesce when they start on the same island versus when they can migrate between two islands.
 
 ```{r}
@@ -291,8 +319,10 @@ hist(sim_times, breaks = 50, probability = TRUE, col = "skyblue",
 Look at the histogram. Notice the massive "long tail" of late coalescence times. Why does this happen?
 
 # Exercise 5.
+
 # Compute the IICR in this situation. Even if the effective population size is constant, what is happening here???
 
+--\> it shows a drastic reduction on Ne, even if it isn't the case (because of population structure)
 
 ```{r}
 data <- data.frame(Time_.gen. = sim_times)
@@ -301,11 +331,13 @@ iicr(data)
 
 What is the IICR saying?
 
-
 # Exercise 6: Change the migration rate to something extremely small.
+
 # How is the shape of the IICR changing? Change the time breaks in the IICR.
+
 # How is changing the plot?
 
+--\> even worse
 
 ```{r}
 sim_times <- replicate(1000000, simulate_coalescence_ne(Ne = 1000, m = 0.00002))
@@ -319,22 +351,23 @@ iicr(data)
 iicr(data, seq(0, 20000, by = 100))
 ```
 
-
 # What are these experiment telling us about the IICR? Can we rely on the IICR?
+
 # What is it telling us about the hyperparameter number of breaks?
 
-# Exercise 7. 
+# Exercise 7.
+
 # To understand tools like PSMC or MSMC (which are used to infer the IICR), you have to cross a conceptual bridge from pure population genetics into the realm of computer science. The Sequentially Markov Coalescent (SMC) framework treats a chromosome exactly like a time-series sequence generated by a Hidden Markov Model (HMM).
 
 # In the classic Occasionally Dishonest Casino problem, a casino uses a Fair die most of the time, but occasionally switches to a Loaded die (which rolls a 6 half the time). You only see the rolls (Observations), not the die being used (Hidden States).
 
 # In population genomics (SMC):
 
-#    The Die Types (Fair vs. Loaded) map to Coalescence Times / TMRCA (t). In practice, what we do is categorize the TMRCA distribution. How would you do that? What are the problems of applying such methodology given that you do not know the TMRCA distribution?
+# The Die Types (Fair vs. Loaded) map to Coalescence Times / TMRCA (t). In practice, what we do is categorize the TMRCA distribution. How would you do that? What are the problems of applying such methodology given that you do not know the TMRCA distribution?
 
-#    Switching the Die (Transitions) maps to Recombination events changing the local tree as you walk along the chromosome.
+# Switching the Die (Transitions) maps to Recombination events changing the local tree as you walk along the chromosome.
 
-#    The Die Rolls (Emissions) map to Mutations (heterozygous sites) observed at specific base pairs.
+# The Die Rolls (Emissions) map to Mutations (heterozygous sites) observed at specific base pairs.
 
 # Simulate a sequence of 300 die rolls where the casino secretly switches between Fair and Loaded dice.
 
@@ -520,6 +553,5 @@ legend("topright", legend = c("True State", "Viterbi Estimate", "Rolled a '6'"),
        col = c("gray", "blue", "red"), lwd = c(5, 2, 1), lty = c(1, 2, NA), pch = c(NA, NA, "|"))
 
 ```
-
 
 # In practice, we do not know which is the transition and emission probability matrices. We will need to infer them and identify to which state the observed sequence belongs.
