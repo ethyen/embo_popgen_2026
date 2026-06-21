@@ -11,7 +11,7 @@
 
 
 
-<title>tutorial_alumnos</title>
+<title>README</title>
 
 <script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
 // be compatible with the behavior of Pandoc < 2.8).
@@ -352,730 +352,128 @@ display: none;
 </div>
 
 
-<div id="embo-practical-course-genomic-diversity-natural-selection-scan-worksheet" class="section level1">
+<div id="embo-practical-course-genomic-diversity-natural-selection-scan-2026" class="section level1">
 <h1>EMBO Practical Course: Genomic Diversity &amp; Natural Selection
-Scan (Worksheet)</h1>
-<p>This worksheet guides you through the analysis of genomic data in
-humans and canines to identify genomic regions under natural selection.
-The tutorial is divided into two main parts:</p>
-<ol style="list-style-type: decimal">
-<li><strong>Part 1: Human Genomic Diversity and Natural
-Selection</strong>: Investigating selection signatures in the candidate
-gene <strong><em>EDAR</em></strong> (associated with ectodermal traits
-in East Asians and Native Americans) using population differentiation
-(<span class="math inline">\(F_{ST}\)</span>, PBS) and haplotype-based
-metrics (EHH, iHS, XP-EHH).</li>
-<li><strong>Part 2: Genomic Selection Scan in Canines</strong>:
-Identifying the selective sweep at the <strong><em>IGF1</em></strong>
-body-size locus by comparing small vs. large dog breeds using PCA,
-PCAdapt (outlier scan), and haplotype homozygosity methods (XP-nSL and
-Rsb).</li>
-</ol>
+Scan (2026)</h1>
+<p>This repository contains the practical tutorial and worksheet
+materials for the <strong>EMBO Practical Course on Genomic Diversity and
+Natural Selection Scan</strong>.</p>
+<p>The tutorial guides students and instructors through the analysis of
+real genomic datasets to identify signatures of positive natural
+selection in both human and domestic dog populations.</p>
 <hr />
-</div>
-<div id="part-1-human-genomic-diversity-and-natural-selection" class="section level1">
-<h1>Part 1: Human Genomic Diversity and Natural Selection</h1>
-<div id="background-and-dataset" class="section level2">
-<h2>1. Background and Dataset</h2>
-<div id="goal" class="section level3">
-<h3>Goal</h3>
-<p>Our goal is to explore approaches and methods which seek to identify
-regions of the genome with signatures of natural selection. We will use
-real genomic data and two classes of tests: one based on population
-differentiation (<span class="math inline">\(F_{ST}\)</span> / PBS) and
-another based on extended haplotype homozygosity (EHH / iHS /
-XP-EHH).</p>
-</div>
-<div id="dataset" class="section level3">
-<h3>Dataset</h3>
-<p>Whole-genome sequencing data from the 1000 Genomes Project Phase III.
-The full database can be accessed via: <a href="ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/release/20130502/" class="uri">ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/release/20130502/</a></p>
-</div>
-<div id="data-pre-processing" class="section level3">
-<h3>Data Pre-processing</h3>
-<p>We will analyze a pre-processed dataset for chromosome 2
-corresponding to individuals sampled from the African (AFR: 504
-individuals), European (EUR: 503 individuals), and East Asian (EAS: 504
-individuals) populations. In this dataset, INDELs, singletons, and SNPs
-with MAF &lt; 0.05 have been removed. The pairwise <span class="math inline">\(F_{ST}\)</span> was then estimated using
-<code>vcftools</code>.</p>
-<p>All data files are located in the <code>input/</code> directory: -
-<code>input/Part_1_HumanDiversity/AFR_EAS.weir.fst</code> (Fst between
-Africans and East Asians) -
-<code>input/Part_1_HumanDiversity/AFR_EUR.weir.fst</code> (Fst between
-Africans and Europeans) -
-<code>input/Part_1_HumanDiversity/EAS_EUR.weir.fst</code> (Fst between
-East Asians and Europeans) -
-<code>input/Part_1_HumanDiversity/Chr2_EDAR_LWK_500K.recode.vcf</code>
-(Phased African haplotypes around <em>EDAR</em>) -
-<code>input/Part_1_HumanDiversity/Chr2_EDAR_CHS_500K.recode.vcf</code>
-(Phased East Asian haplotypes around <em>EDAR</em>) -
-<code>input/Part_1_HumanDiversity/Chr2_NAM_EAS.weir.fst</code> (Fst
-between Native Americans and East Asians in candidate region) -
-<code>input/Part_1_HumanDiversity/Chr2_NAM_EUR.weir.fst</code> (Fst
-between Native Americans and Europeans in candidate region) -
-<code>input/Part_1_HumanDiversity/Chr2_EUR_EAS.weir.fst</code> (Fst
-between Europeans and East Asians in candidate region)</p>
-<hr />
-</div>
-</div>
-<div id="genetic-differentiation-f_st-and-pbs" class="section level2">
-<h2>2. Genetic Differentiation (<span class="math inline">\(F_{ST}\)</span> and PBS)</h2>
-<div id="investigating-the-candidate-gene-edar" class="section level3">
-<h3>Investigating the Candidate Gene <em>EDAR</em></h3>
-<p>The human Ectodysplasin A receptor gene, or
-<strong><em>EDAR</em></strong>, is part of the EDA signaling pathway
-which specifies prenatally the location, size, and shape of ectodermal
-appendages (such as hair follicles, teeth, and glands). <em>EDAR</em> is
-a textbook example of positive selection in East Asians. A specific
-non-synonymous variant, <strong>rs3827760</strong> (chr2:109,513,601
-A&gt;G), results in a Val370Ala substitution and is strongly associated
-with thicker hair shafts and shovel-shaped incisors. Another hypothesis
-states that <em>EDAR</em> acted along with <em>FADS</em> and
-<em>VDR</em> in the Beringia Standstill, allowing Native American
-ancestors to survive in extreme arctic environments.</p>
-</div>
-<div id="questions-for-students" class="section level3">
-<h3>Questions for Students</h3>
-<ol style="list-style-type: decimal">
-<li><strong>The estimate of <span class="math inline">\(F_{ST}\)</span>
-by the Weir and Cockerham metric can sometimes generate negative values
-and “NA”. What does that mean? How can this interfere with the
-results?</strong>
+<div id="tutorial-overview" class="section level2">
+<h2>Tutorial Overview</h2>
+<p>The course is divided into two main sections:</p>
+<div id="part-1-human-genomic-diversity-and-natural-selection" class="section level3">
+<h3>Part 1: Human Genomic Diversity and Natural Selection</h3>
 <ul>
-<li><em>Answer</em>:</li>
+<li><strong>Objective</strong>: Investigate signatures of positive
+selection in the candidate gene <strong><em>EDAR</em></strong>
+(associated with ectodermal traits like hair thickness and dental
+morphology in East Asians and Native Americans).</li>
+<li><strong>Methods</strong>:
+<ul>
+<li>Population differentiation metrics: Pairwise <span class="math inline">\(F_{ST}\)</span> (Weir &amp; Cockerham) and
+<strong>Population Branch Statistics (PBS)</strong>.</li>
+<li>Haplotype-based tests: <strong>Extended Haplotype Homozygosity
+(EHH)</strong> decay, furcation trees, <strong>Integrated Haplotype
+Score (iHS)</strong> (SNP-level and sliding window), and
+cross-population <strong>XP-EHH</strong> tests.</li>
 </ul></li>
-<li><strong>The <span class="math inline">\(F_{ST}\)</span> values
-observed between pairs of populations for the SNP rs3827760 (position
-109,513,601) fall within which distribution quantiles of <span class="math inline">\(F_{ST}\)</span> values for the studied chromosome?
-Can they be considered outliers?</strong>
-<ul>
-<li><em>Answer</em>:</li>
-</ul></li>
-<li><strong>From the observed <span class="math inline">\(F_{ST}\)</span> values between population pairs
-and the significance estimates, what can we say about the rs3827760 SNP
-differentiation between populations?</strong>
-<ul>
-<li><em>Answer</em>:</li>
-</ul></li>
-<li><strong>Discuss how these results justify performing another type of
-analysis based on PBS (Population Branch Statistics).</strong>
-<ul>
-<li><em>Answer</em>:</li>
-</ul></li>
-<li><strong>What does the PBS analysis reveal? What is the difference
-between PBS and <span class="math inline">\(F_{ST}\)</span>
-analysis?</strong>
-<ul>
-<li><em>Answer</em>:</li>
-</ul></li>
-</ol>
-<hr />
-</div>
-<div id="r-code-exercise-pairwise-f_st-calculation" class="section level3">
-<h3>R Code Exercise: Pairwise <span class="math inline">\(F_{ST}\)</span> Calculation</h3>
-<p>Write the R code necessary to perform the following: 1. Read the
-pairwise <span class="math inline">\(F_{ST}\)</span> files from
-<code>input/</code>. 2. Filter duplicate SNP positions and exclude NA
-values. 3. Align the datasets by overlapping positions. 4. Set negative
-<span class="math inline">\(F_{ST}\)</span> values to zero. 5. Check Fst
-values at position <code>109513601</code>. 6. Calculate distribution
-quantiles to determine if rs3827760 is an outlier. 7. Plot pairwise Fst
-around <code>109513601</code> in a 10kb window, highlighting the
-candidate SNP.</p>
-<p><strong>Write your R code here:</strong></p>
-<pre class="r"><code># 
-
-</code></pre>
-<hr />
-</div>
-<div id="r-code-exercise-population-branch-statistics-pbs" class="section level3">
-<h3>R Code Exercise: Population Branch Statistics (PBS)</h3>
-<p>Write the R code necessary to: 1. Estimate the Population Branch
-Statistic for East Asians (<span class="math inline">\(PBS_{EAS}\)</span>) using the AFR, EAS, and EUR
-populations. 2. Convert negative branch lengths to zero. 3. Check the
-PBS value for the candidate SNP rs3827760. 4. Calculate distribution
-quantiles to determine if it is an outlier. 5. Plot PBS values around
-the candidate SNP in a 10kb window.</p>
-<p><strong>Write your R code here:</strong></p>
-<pre class="r"><code># 
-
-</code></pre>
-<hr />
-</div>
-</div>
-<div id="extended-haplotype-homozygosity-ehh" class="section level2">
-<h2>3. Extended Haplotype Homozygosity (EHH)</h2>
-<div id="extended-haplotype-homozygosity-ehh-and-haplotype-sweeps" class="section level3">
-<h3>Extended Haplotype Homozygosity (EHH) and Haplotype Sweeps</h3>
-<p>Different approaches can detect genomic signatures of selection at
-different timescales. More recent selection signals can be detected from
-haplotype-based tests. Positive selection causes a rapid rise in the
-frequency of the selected allele, such that recombination does not have
-enough time to break down the haplotype on which the mutation arose.
-This creates a signature of <strong>Extended Haplotype Homozygosity
-(EHH)</strong> extending over a long physical distance.</p>
-</div>
-<div id="questions-for-students-1" class="section level3">
-<h3>Questions for Students</h3>
-<ol style="list-style-type: decimal">
-<li><strong>How is the haplotype profile of genetic variants under
-recent positive selection?</strong>
-<ul>
-<li><em>Answer</em>:</li>
-</ul></li>
-<li><strong>What is the profile of ancestral and derived haplotypes of
-the rs3827760 SNP in AFR and EAS?</strong>
-<ul>
-<li><em>Answer</em>:</li>
-</ul></li>
-<li><strong>The iHS score observed for the SNP rs3827760 falls within
-which distribution quantiles of iHS values for the studied chromosome?
-Can it be considered an outlier? How can we make this analysis more
-robust?</strong>
-<ul>
-<li><em>Answer</em>:</li>
-</ul></li>
-<li><strong>What information does the XP-EHH analysis add about natural
-selection in the candidate SNP?</strong>
-<ul>
-<li><em>Answer</em>:</li>
-</ul></li>
-</ol>
-<hr />
-</div>
-<div id="r-code-exercise-ehh-furcation-trees" class="section level3">
-<h3>R Code Exercise: EHH &amp; Furcation Trees</h3>
-<p>Write the R code necessary to: 1. Convert the VCF databases to
-<code>rehh</code> format using <code>data2haplohh()</code>. 2. Estimate
-the EHH decay for rs3827760 in both populations. 3. Plot the EHH decay
-and furcation trees for both AFR and EAS.</p>
-<p><strong>Write your R code here:</strong></p>
-<pre class="r"><code># 
-
-</code></pre>
-<hr />
-</div>
-<div id="r-codeexercise-ihs-xp-ehh-window-based" class="section level3">
-<h3>R CodeExercise: iHS &amp; XP-EHH (Window-based)</h3>
-<p>Write the R code necessary to: 1. Perform a genome-wide scan of
-homozygosity using <code>scan_hh()</code> for AFR and EAS. 2. Calculate
-iHS scores for both populations using <code>ihh2ihs()</code>. 3. Check
-the iHS score at rs3827760 and generate a single-site iHS plot in EAS.
-4. Create a function to estimate the average absolute iHS in sliding
-windows (50 SNPs/40 step) and plot the results. 5. Estimate
-cross-population XP-EHH between EAS and AFR using
-<code>ies2xpehh()</code>, calculate window-based averages, and plot
-them.</p>
-<p><strong>Write your R code here:</strong></p>
-<pre class="r"><code># 
-
-</code></pre>
-<hr />
-</div>
-</div>
-<div id="native-american-selection-analysis" class="section level2">
-<h2>4. Native American Selection Analysis</h2>
-<div id="background" class="section level3">
-<h3>Background</h3>
-<p>Hlusko et al. (2018), using morphological data, found a strong
-selection signal in the <em>EDAR</em> gene in Native Americans. Using
-the additional database from the 1000 Genomes Project (Peruvian samples
-with over 95% Native American Ancestry, represented as
-<strong>NAM</strong>), we evaluate genomic signatures of selection at
-the functional variant rs3827760.</p>
-</div>
-<div id="questions-for-students-2" class="section level3">
-<h3>Questions for Students</h3>
-<ol style="list-style-type: decimal">
-<li><strong>Is the functional allele in East Asian at high frequency in
-other human populations (e.g. Native Americans)?</strong>
-<ul>
-<li><em>Answer</em>:</li>
-</ul></li>
-<li><strong>Can we identify signatures of natural selection on EDAR in
-Native Americans using PBS?</strong>
-<ul>
-<li><em>Answer</em>:</li>
-</ul></li>
-<li><strong>Is selection targeting the same functional variant?</strong>
-<ul>
-<li><em>Answer</em>:</li>
-</ul></li>
-<li><strong>What is your conclusion based on the data
-generated?</strong>
-<ul>
-<li><em>Answer</em>:</li>
-</ul></li>
-</ol>
-<hr />
-</div>
-<div id="r-code-exercise-pbs-in-native-americans-nam" class="section level3">
-<h3>R Code Exercise: PBS in Native Americans (NAM)</h3>
-<p>Write the R code necessary to: 1. Read the pairwise <span class="math inline">\(F_{ST}\)</span> files involving Native Americans
-(<code>input/Part_1_HumanDiversity/Chr2_NAM_EAS.weir.fst</code> and
-<code>input/Part_1_HumanDiversity/Chr2_NAM_EUR.weir.fst</code>) and
-Europeans-East Asians
-(<code>input/Part_1_HumanDiversity/Chr2_EUR_EAS.weir.fst</code>). 2.
-Filter duplicates, exclude NA values, and align positions. 3. Convert
-negative <span class="math inline">\(F_{ST}\)</span> values to zero. 4.
-Estimate <span class="math inline">\(PBS_{NAM}\)</span> using NAM, EAS,
-and EUR. 5. Check PBS value at rs3827760, check quantiles, and plot the
-PBS scan.</p>
-<p><strong>Write your R code here:</strong></p>
-<pre class="r"><code># 
-
-</code></pre>
-</div>
-</div>
-</div>
-<div id="part-2-genomic-selection-sweep-scan-in-canines" class="section level1">
-<h1>Part 2: Genomic Selection Sweep Scan in Canines</h1>
-<div id="background-and-dataset-1" class="section level2">
-<h2>1. Background and Dataset</h2>
-<p>The dataset is sourced from the <strong>Dog10K</strong> consortium
-(<a href="https://dog10k.kiz.ac.cn/Home/Download">Download Link</a>).
-The original genomic dataset is a high-coverage phased BCF file
-containing 1,929 individuals and over 29 million SNPs: - Original file:
-<code>AutoAndXPAR.Dog10K.phased.bcf</code> - Metadata table:
-<code>dog10K-alignment-sample-table.2022-02-23-v7.txt</code></p>
-<div id="sample-selection" class="section level3">
-<h3>Sample Selection</h3>
-<p>For this analysis, we will use a subset of <strong>130
-individuals</strong> representing body size extremes:</p>
-<table>
-<thead>
-<tr class="header">
-<th align="left">Group</th>
-<th align="left">Dog Breed (Breed.Type)</th>
-<th align="center">Number of Samples</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="left"><strong>Small</strong> (61)</td>
-<td align="left">Dachshund</td>
-<td align="center">17</td>
-</tr>
-<tr class="even">
-<td align="left"></td>
-<td align="left">Toy Fox Terrier</td>
-<td align="center">10</td>
-</tr>
-<tr class="odd">
-<td align="left"></td>
-<td align="left">Pomeranian</td>
-<td align="center">8</td>
-</tr>
-<tr class="even">
-<td align="left"></td>
-<td align="left">Brussels Griffon</td>
-<td align="center">7</td>
-</tr>
-<tr class="odd">
-<td align="left"></td>
-<td align="left">Yorkshire Terrier</td>
-<td align="center">5</td>
-</tr>
-<tr class="even">
-<td align="left"></td>
-<td align="left">Shih Tzu</td>
-<td align="center">5</td>
-</tr>
-<tr class="odd">
-<td align="left"></td>
-<td align="left">Maltese</td>
-<td align="center">4</td>
-</tr>
-<tr class="even">
-<td align="left"></td>
-<td align="left">Pekingese</td>
-<td align="center">3</td>
-</tr>
-<tr class="odd">
-<td align="left"></td>
-<td align="left">Chihuahua</td>
-<td align="center">2</td>
-</tr>
-<tr class="even">
-<td align="left"><strong>Large</strong> (69)</td>
-<td align="left">Saint Bernard</td>
-<td align="center">13</td>
-</tr>
-<tr class="odd">
-<td align="left"></td>
-<td align="left">Leonberger</td>
-<td align="center">11</td>
-</tr>
-<tr class="even">
-<td align="left"></td>
-<td align="left">Bernese Mountain Dog</td>
-<td align="center">10</td>
-</tr>
-<tr class="odd">
-<td align="left"></td>
-<td align="left">Greater Swiss Mountain Dog</td>
-<td align="center">10</td>
-</tr>
-<tr class="even">
-<td align="left"></td>
-<td align="left">Great Pyrenees</td>
-<td align="center">7</td>
-</tr>
-<tr class="odd">
-<td align="left"></td>
-<td align="left">Bullmastiff</td>
-<td align="center">6</td>
-</tr>
-<tr class="even">
-<td align="left"></td>
-<td align="left">Mastiff</td>
-<td align="center">6</td>
-</tr>
-<tr class="odd">
-<td align="left"></td>
-<td align="left">Newfoundland</td>
-<td align="center">6</td>
-</tr>
-</tbody>
-</table>
-<hr />
-</div>
-</div>
-<div id="preprocessing-and-filtering" class="section level2">
-<h2>2. Preprocessing and Filtering</h2>
-<p>We filter the massive BCF file to include only our 130 samples and
-chromosome 15, while removing low-frequency SNPs (MAF &lt; 0.05) that
-are not informative for breed/size differentiation. The coordinates
-correspond to the CanFam3 reference genome, where the
-<strong><em>IGF1</em></strong> gene is located approximately in the
-<strong>41.2 Mb to 44.5 Mb</strong> region.</p>
-<div id="bash-code-exercise-1-extraction-format-conversion" class="section level3">
-<h3>Bash Code Exercise 1: Extraction &amp; Format Conversion</h3>
-<pre class="bash"><code># 1. Extract chr15 and filter for samples and MAF &gt;= 0.05
-bcftools view \
-  -S input/Part_2_CanidDiversity/subset_dogs.txt \
-  -r chr15 \
-  -q 0.05:minor \
-  -O b \
-  -o input/Part_2_CanidDiversity/subset_chr15.bcf \
-  input/Part_2_CanidDiversity/AutoAndXPAR.Dog10K.phased.bcf
-
-# 2. Index the subset BCF
-bcftools index input/Part_2_CanidDiversity/subset_chr15.bcf
-
-# 3. Convert BCF to PLINK binary format (.bed/.bim/.fam)
-plink1.9 \
-  --bcf input/Part_2_CanidDiversity/subset_chr15.bcf \
-  --dog \
-  --keep-allele-order \
-  --make-bed \
-  --out output/subset_chr15</code></pre>
-<blockquote>
-<p><strong>Premise</strong>: The filtered BCF file contains
-<strong>177,953 SNPs</strong> on chromosome 15 across the 130 samples.
-The coordinates correspond to the CanFam3 reference genome, where the
-<strong><em>IGF1</em></strong> gene is located approximately in the
-<strong>41.2 Mb to 44.5 Mb</strong> region.</p>
-</blockquote>
-<hr />
-</div>
-</div>
-<div id="population-structure-analysis-pca" class="section level2">
-<h2>3. Population Structure Analysis (PCA)</h2>
-<p>Before checking for selection outliers, we must examine the genetic
-structure of our subset. We will run a PCA using <strong>PLINK
-1.9</strong> and visualize it in R.</p>
-<div id="r-code-exercise-2-pca-visualization-in-r" class="section level3">
-<h3>R Code Exercise 2: PCA Visualization in R</h3>
-<p>Write the R code necessary to: 1. Load the eigenvectors and
-eigenvalues generated by PLINK. 2. Merge them with the sample metadata
-(<code>input/Part_2_CanidDiversity/sample_info.txt</code>). 3. Calculate
-the percentage of variance explained by PC1 and PC2. 4. Generate a
-scatter plot of PC1 vs. PC2, coloring the points by breed and shaping
-them by size group (small vs. large).</p>
-<p><strong>Write your R code here:</strong></p>
-<pre class="r"><code># 
-
-</code></pre>
-</div>
-<div id="questions-for-students-3" class="section level3">
-<h3>Questions for Students</h3>
-<ol style="list-style-type: decimal">
-<li><strong>What pattern do you observe along the first principal
-component (PC1)?</strong>
-<ul>
-<li><em>Answer</em>:</li>
-</ul></li>
-<li><strong>Why does PC1 capture body size differences in this
-particular dataset?</strong>
-<ul>
-<li><em>Answer</em>:</li>
-</ul></li>
-</ol>
-<hr />
-</div>
-</div>
-<div id="genomic-outlier-detection-using-pcadapt" class="section level2">
-<h2>4. Genomic Outlier Detection using PCAdapt</h2>
-<p><strong>PCAdapt</strong> is a method designed to find SNPs that are
-exceptionally related to population structure (PCs) rather than neutral
-drift.</p>
-<div id="the-role-of-linkage-disequilibrium-ld-and-clumping" class="section level3">
-<h3>The Role of Linkage Disequilibrium (LD) and Clumping</h3>
-<blockquote>
-<p>[!IMPORTANT] <strong>Key Concept</strong>: PCA is highly sensitive to
-Linkage Disequilibrium (LD). If a region contains many highly correlated
-markers (due to a selective sweep or low recombination), that single
-region will dominate the principal components, biasing the PCA and
-masking other genomic signals (such as the <em>IGF1</em> gene
-sweep).</p>
-<p>To resolve this, we must enable <strong>LD Clumping</strong> in
-PCAdapt. Thinning out redundant SNPs in strong LD allows the global
-genomic structure to be correctly computed and helps locate narrow
-selection sweeps.</p>
-</blockquote>
-</div>
-<div id="r-code-exercise-3-pcadapt-with-ld-clumping" class="section level3">
-<h3>R Code Exercise 3: PCAdapt with LD Clumping</h3>
-<p>Write the R script necessary to: 1. Load the genotypes into PCAdapt.
-2. Execute <code>pcadapt()</code> using <span class="math inline">\(K =
-2\)</span> components and enable <strong>LD clumping</strong> (for
-example, with a window size of 500 SNPs and an <span class="math inline">\(r^2\)</span> threshold of 0.1). 3. Merge the
-resulting p-values with the physical genomic positions from the
-<code>.bim</code> file. 4. Generate a Manhattan Plot of the results,
-plotting physical position (in Mb) on the X-axis and <span class="math inline">\(-\log_{10}(\text{p-value})\)</span> on the
-Y-axis.</p>
-<p><strong>Write your R code here:</strong></p>
-<pre class="r"><code># 
-
-</code></pre>
-</div>
-<div id="questions-for-students-4" class="section level3">
-<h3>Questions for Students</h3>
-<ol style="list-style-type: decimal">
-<li><strong>If you ran PCAdapt without enabling LD clumping, a single
-massive peak at ~61 Mb would dominate the plot, hiding other regions.
-What is the effect of LD clumping on outlier detection and why is it
-necessary here?</strong>
-<ul>
-<li><em>Answer</em>:</li>
-</ul></li>
-<li><strong>Did you detect the outlier peak at the <em>IGF1</em> locus?
-What is the approximate coordinate of the peak and what is its
-biological significance?</strong>
-<ul>
-<li><em>Answer</em>:</li>
-</ul></li>
-</ol>
-<hr />
-</div>
-</div>
-<div id="cross-population-selection-scan-using-xp-nsl" class="section level2">
-<h2>5. Cross-Population Selection Scan using XP-nSL</h2>
-<p>To confirm that the outlier peak on chromosome 15 is indeed driven by
-a selective sweep, we will perform a haplotype-based selection scan.
-Specifically, we will run <strong>XP-nSL (Cross-Population Number of
-Segregating Sites by Length)</strong> to compare the haplotype
-homozygosity decay between small dogs and large dogs.</p>
-<div id="key-concepts-nsl-and-xp-nsl" class="section level3">
-<h3>Key Concepts: nSL and XP-nSL</h3>
-<ul>
-<li><strong>nSL</strong>: A within-population selection scan metric
-similar to iHS. However, instead of measuring haplotype decay in terms
-of genetic distance (which requires a genetic map), nSL measures
-distance by counting the number of segregating sites (segregating site
-count by length). This makes it highly robust to recombination rate
-variation and suitable for genomes without well-defined genetic
-maps.</li>
-<li><strong>XP-nSL</strong>: A cross-population statistic that compares
-nSL profiles between a target population and a reference population. A
-high positive score indicates a selective sweep specific to the target
-population (longer haplotypes around the derived allele).</li>
-<li><strong>Phased Mode</strong>: Since our input Dog10K BCF file is
-already phased (containing haplotype data formatted as <code>0|0</code>,
-<code>1|0</code>, etc.), we will perform a phased XP-nSL scan. This
-utilizes the precise haplotype sequences, which provides a significantly
-stronger selection signal compared to unphased analyses.</li>
+<li><strong>Key Population Comparisons</strong>: African (AFR/LWK),
+European (EUR), East Asian (EAS/CHS), and Native American (NAM/Peruvian)
+populations from the 1000 Genomes Project Phase III.</li>
 </ul>
 </div>
-<div id="outgroup-allele-polarization" class="section level3">
-<h3>Outgroup Allele Polarization</h3>
-<p>Haplotype selection scans require knowing which allele is
-<strong>ancestral</strong> (original) and which is
-<strong>derived</strong> (new mutant). <code>selscan</code> expects a
-VCF file where <code>0</code> is the ancestral allele and <code>1</code>
-is the derived allele. To polarize our dataset, we use the <strong>gray
-wolves</strong> in the Dog10K metadata as an outgroup: - Gray wolves are
-the evolutionary ancestor of domestic dogs. - For each SNP, the most
-common (major) allele in the gray wolf population is designated as the
-ancestral allele. - If the ALT allele in the original VCF is the major
-allele in wolves, we must physically swap the REF/ALT alleles and swap
-genotypes (<code>0</code> becomes <code>1</code>, and <code>1</code>
-becomes <code>0</code>) for all individuals.</p>
-<hr />
-</div>
-<div id="bash-code-exercise-4-extracting-and-polarizing-alleles" class="section level3">
-<h3>Bash Code Exercise 4: Extracting and Polarizing Alleles</h3>
-<pre class="bash"><code># 1. Extract wolf samples and combine with dog samples
-bcftools query -l input/Part_2_CanidDiversity/AutoAndXPAR.Dog10K.phased.bcf | grep -E &#39;^CLUP&#39; &gt; input/Part_2_CanidDiversity/wolves.txt
-cat input/Part_2_CanidDiversity/subset_dogs.txt input/Part_2_CanidDiversity/wolves.txt &gt; input/Part_2_CanidDiversity/dogs_and_wolves.txt
-
-# 2. Extract polymorphic sites for both dogs and wolves
-bcftools query -f &#39;%CHROM\t%POS\n&#39; input/Part_2_CanidDiversity/subset_chr15.bcf &gt; input/Part_2_CanidDiversity/subset_chr15_positions.txt
-bcftools view \
-  -S input/Part_2_CanidDiversity/dogs_and_wolves.txt \
-  -T input/Part_2_CanidDiversity/subset_chr15_positions.txt \
-  -O z \
-  -o input/Part_2_CanidDiversity/subset_chr15_with_wolves.vcf.gz \
-  input/Part_2_CanidDiversity/AutoAndXPAR.Dog10K.phased.bcf
-
-# 3. Polarize alleles using Python (major allele in wolves = 0)
-python3 scripts/polarize_by_wolves.py
-
-# 4. Re-compress to block gzip format and index polarized VCF
-bcftools view input/Part_2_CanidDiversity/subset_chr15_polarized.vcf.gz -O z -o output/subset_chr15_polarized_bgzf.vcf.gz
-mv output/subset_chr15_polarized_bgzf.vcf.gz input/Part_2_CanidDiversity/subset_chr15_polarized.vcf.gz
-bcftools index input/Part_2_CanidDiversity/subset_chr15_polarized.vcf.gz
-
-# 5. Extract polarized VCFs for small and large dogs separately
-bcftools view -S input/Part_2_CanidDiversity/small_dogs.txt -O z -o input/Part_2_CanidDiversity/small_dogs_polarized.vcf.gz input/Part_2_CanidDiversity/subset_chr15_polarized.vcf.gz
-bcftools index input/Part_2_CanidDiversity/small_dogs_polarized.vcf.gz
-
-bcftools view -S input/Part_2_CanidDiversity/large_dogs.txt -O z -o input/Part_2_CanidDiversity/large_dogs_polarized.vcf.gz input/Part_2_CanidDiversity/subset_chr15_polarized.vcf.gz
-bcftools index input/Part_2_CanidDiversity/large_dogs_polarized.vcf.gz</code></pre>
-<hr />
-</div>
-<div id="selection-scan-execution-and-normalization" class="section level3">
-<h3>Selection Scan Execution and Normalization</h3>
-<p>We will execute the selection scan using the compiled
-<code>selscan</code> binary, comparing small dogs (target) against large
-dogs (reference) in phased mode, and normalize the raw scores.</p>
-</div>
-<div id="bash-code-exercise-5-running-xp-nsl-and-normalizing" class="section level3">
-<h3>Bash Code Exercise 5: Running XP-nSL and Normalizing</h3>
-<p>Write the bash commands necessary to: 1. Execute the
-<code>selscan</code> program in phased XP-nSL mode using the polarized
-target (small dogs) and reference (large dogs) VCFs. Use 4 threads and
-output results to <code>output/xpnsl_phased</code>. 2. Normalize the raw
-XP-nSL scores using the <code>selscan norm</code> utility. 3. Calculate
-window-based statistics (fraction of outliers) in 100 Kb non-overlapping
-windows.</p>
-<p><strong>Write your Bash code here:</strong></p>
-<pre class="bash"><code># 
-
-</code></pre>
-<hr />
-</div>
-<div id="r-code-exercise-6-xp-nsl-haplotype-manhattan-plots" class="section level3">
-<h3>R Code Exercise 6: XP-nSL Haplotype Manhattan Plots</h3>
-<p>Write the R code necessary to: 1. Load the normalized SNP-level
-XP-nSL scores from
-<code>input/Part_2_CanidDiversity/xpnsl_phased.xpnsl.out.norm</code>. 2.
-Load the 100 Kb window-level data from
-<code>input/Part_2_CanidDiversity/xpnsl_phased.xpnsl.out.norm.100kb.windows</code>.
-3. Highlight the <em>IGF1</em> region (between 41 Mb and 45.5 Mb). 4.
-Generate two Manhattan plots: one for the raw SNP-level scores
-(calculating <span class="math inline">\(-\log_{10}(p\text{-value})\)</span> from the
-normalized Z-scores), and another for the window-based fraction of
-extreme positive SNPs (<code>frac_top</code>).</p>
-<p><strong>Write your R code here:</strong></p>
-<pre class="r"><code># 
-
-</code></pre>
-</div>
-<div id="questions-for-students-5" class="section level3">
-<h3>Questions for Students</h3>
-<ol style="list-style-type: decimal">
-<li><strong>Why do we need to polarize alleles using an outgroup like
-the gray wolf? What does the <code>0</code> vs <code>1</code> coding
-represent in <code>selscan</code>?</strong>
+<div id="part-2-genomic-selection-scan-in-canines" class="section level3">
+<h3>Part 2: Genomic Selection Scan in Canines</h3>
 <ul>
-<li><em>Answer</em>:</li>
+<li><strong>Objective</strong>: Locate the selective sweep at the
+<strong><em>IGF1</em></strong> body-size locus by comparing small
+vs. large dog breeds.</li>
+<li><strong>Methods</strong>:
+<ul>
+<li><strong>Principal Component Analysis (PCA)</strong> with PLINK 1.9
+to examine genetic structure.</li>
+<li><strong>PCAdapt</strong> outlier scan with Linkage Disequilibrium
+(LD) clumping to isolate localized selection signals.</li>
+<li>Cross-population haplotype scans: <strong>XP-nSL</strong> (Number of
+Segregating Sites by Length) with Gray Wolves as an outgroup for
+ancestral allele polarization, and <strong>Rsb</strong> (Extended
+Haplotype Homozygosity ratio).</li>
 </ul></li>
-<li><strong>Why does the raw SNP-level XP-nSL scan look like a noisy
-cloud at individual sites? What is the effect of calculating
-window-based scores (e.g. 100 Kb)?</strong>
-<ul>
-<li><em>Answer</em>:</li>
-</ul></li>
-</ol>
+<li><strong>Key Dataset</strong>: Dog10K consortium phased BCF genotypes
+for 130 domestic dogs and gray wolves.</li>
+</ul>
 <hr />
 </div>
 </div>
-<div id="alternative-haplotype-selection-scan-rsb-using-rehh" class="section level2">
-<h2>6. Alternative Haplotype Selection Scan: Rsb using
-<code>rehh</code></h2>
-<p>As a complementary approach to XP-nSL, we will run
-<strong>Rsb</strong>, another widely used cross-population EHH-based
-statistic.</p>
-<div id="key-concepts-comparison" class="section level3">
-<h3>Key Concepts &amp; Comparison</h3>
+<div id="repository-structure" class="section level2">
+<h2>Repository Structure</h2>
+<p>The project directory is structured as follows:</p>
+<pre><code>├── tutorial_completo.md      # Instructor Version (Markdown)
+├── tutorial_completo.html    # Instructor Version (Self-contained HTML)
+├── tutorial_alumnos.md       # Student Version (Markdown)
+├── tutorial_alumnos.html     # Student Version (Self-contained HTML)
+├── custom.css                # Premium styling configuration
+├── input/                    # Organized input directories:
+│   ├── Part_1_HumanDiversity/   # Human datasets (VCFs, weir.fst)
+│   └── Part_2_CanidDiversity/   # Canine datasets (VCFs, PLINK, XP-nSL)
+├── figures/                  # Organized output directories:
+│   ├── figs_human_diversity/    # Human selection sweep plots
+│   └── figs_canid_diversity/    # Canine selective sweep plots
+├── Scripts/                  # R and Python scripts running the selection pipelines
+├── output/                   # Directory for active run outputs
+└── .gitignore                # Git ignore configuration</code></pre>
+<hr />
+</div>
+<div id="document-versions" class="section level2">
+<h2>Document Versions</h2>
 <ul>
-<li><strong>Rsb</strong>: Compares the integrated Extended Haplotype
-Homozygosity (iHH) between two populations. It is calculated as <span class="math inline">\(\ln(iES_{pop1} / iES_{pop2})\)</span>, where <span class="math inline">\(iES\)</span> is the integrated EHH over physical
-distance (bp). A high positive score indicates selection in population 1
-(small dogs), while a negative score indicates selection in population 2
-(large dogs).</li>
-<li><strong>Difference from XP-nSL</strong>:
+<li><strong>Instructor Version
+(<code>tutorial_completo</code>)</strong>: Contains the fully written
+Bash/R code snippets, detailed explanations, calculated statistics, and
+complete answers to all student questions.</li>
+<li><strong>Student Version (<code>tutorial_alumnos</code>)</strong>:
+Contains the background text, questions, and empty code block skeletons
+(<code># Write your code here</code>) to be filled out during the
+practical sessions.</li>
+</ul>
+<div id="fully-self-contained-html-documents" class="section level3">
+<h3>💡 Fully Self-Contained HTML Documents</h3>
+<p>The <code>.html</code> versions of both the student and instructor
+sheets have been compiled using Pandoc’s <code>--embed-resources</code>
+flag. <strong>All figures, styles, and web fonts are embedded directly
+into the HTML code as base64 Data URIs.</strong> - This means you can
+copy, email, or move <code>tutorial_completo.html</code> or
+<code>tutorial_alumnos.html</code> to any folder or machine
+independently, and they will load and render perfectly with all figures
+intact without needing the <code>Output/</code> or <code>Figures/</code>
+folders.</p>
+<hr />
+</div>
+</div>
+<div id="software-package-requirements" class="section level2">
+<h2>Software &amp; Package Requirements</h2>
+<p>To run the complete pipelines, you will need the following tools:</p>
+<div id="command-line-tools" class="section level3">
+<h3>Command Line Tools:</h3>
 <ul>
-<li><strong>XP-nSL</strong> integrates the nSL metric over the number of
-segregating sites (SNP count). This makes it highly robust to local
-recombination rate variation.</li>
-<li><strong>Rsb</strong> integrates EHH over physical distance (bp). In
-species with very strong selective sweeps and long-range Linkage
-Disequilibrium (like domestic dogs), Rsb can produce exceptionally high,
-clear peaks at sweep loci like <em>IGF1</em>.</li>
-</ul></li>
+<li><code>bcftools</code> (v1.18+)</li>
+<li><code>plink1.9</code></li>
+<li><code>selscan</code> (for XP-nSL calculations)</li>
+<li><code>pandoc</code> (to compile markdown documentation)</li>
 </ul>
 </div>
-<div id="phase-preservation-during-outgroup-polarization" class="section level3">
-<h3>Phase Preservation during Outgroup Polarization</h3>
-<p>A common question in haplotype selection scans is: <strong>Does
-swapping the REF and ALT alleles (and flipping 0 to 1 and 1 to 0) to
-align with the outgroup corrupt or destroy the phasing
-information?</strong> The answer is <strong>No</strong>. In a phased
-VCF, genotypes are represented as <code>0|1</code> or <code>1|0</code>
-to denote which allele lies on which homologous chromosome (haplotype).
-Swapping REF and ALT alleles and swapping <code>0</code> and
-<code>1</code> (converting <code>0|1</code> to <code>1|0</code> and
-vice-versa) is a mathematically symmetric operation. It maintains the
-exact same physical haplotype alignment across all sites on each
-chromosome, merely updating the label of which allele is ancestral and
-which is derived. Thus, outgroup polarization is fully compatible with
-phased haplotype scans and no data is lost.</p>
-<hr />
-</div>
-<div id="r-code-exercise-7-running-rsb-in-r-using-rehh" class="section level3">
-<h3>R Code Exercise 7: Running Rsb in R using <code>rehh</code></h3>
-<p>Write the R code necessary to: 1. Load the polarized Small Dogs and
-Large Dogs VCFs into <code>rehh</code> using
-<code>data2haplohh()</code>. 2. Compute the haplotype homozygosity scan
-for both populations using <code>scan_hh()</code>. 3. Compute the
-cross-population Rsb statistic using <code>ines2rsb()</code>. 4. Plot
-the Rsb Manhattan plot using <code>ggplot2</code>, highlighting the
-<em>IGF1</em> region between 41 Mb and 45.5 Mb in red.</p>
-<p><strong>Write your R code here:</strong></p>
-<pre class="r"><code># 
-
-</code></pre>
-<hr />
-</div>
-<div id="questions-for-students-6" class="section level3">
-<h3>Questions for Students</h3>
-<ol style="list-style-type: decimal">
-<li><strong>Explain the physical and mathematical difference between Rsb
-and XP-nSL. Why does Rsb show a much higher, less noisy peak at the
-<em>IGF1</em> locus in dogs compared to XP-nSL?</strong>
+<div id="r-packages" class="section level3">
+<h3>R Packages:</h3>
 <ul>
-<li><em>Answer</em>:</li>
-</ul></li>
-<li><strong>Does outgroup polarization of a phased VCF file corrupt or
-destroy the phasing information? Why or why not?</strong>
-<ul>
-<li><em>Answer</em>:</li>
-</ul></li>
-</ol>
+<li><code>rehh</code> (for EHH, iHS, XP-EHH, and Rsb analyses)</li>
+<li><code>data.table</code> (for fast data manipulation)</li>
+<li><code>ggplot2</code> (for custom premium plots)</li>
+<li><code>pcadapt</code> (for population structure outliers)</li>
+</ul>
 </div>
 </div>
 </div>

@@ -83,9 +83,9 @@ setwd("~/test/")
 # straightforward for the user.
 
 # File paths used throughout this tutorial
-info_file  <- "info_embo_1240k.txt"                 # metadata (one row per individual)
-prefix     <- "v62.0_1240k_public_embosubset"       # EIGENSTRAT prefix (.geno/.snp/.ind)
-f2_dir     <- "f2data_1240k"                        # will store f2 blocks
+info_file  <- "../data/info_embo_1240k.txt"                 # metadata (one row per individual)
+prefix     <- "../data/v62.0_1240k_public_embosubset"       # EIGENSTRAT prefix (.geno/.snp/.ind)
+f2_dir     <- "../data/f2data_1240k"                        # will store f2 blocks
 
 
 ################################################################################
@@ -281,9 +281,10 @@ ggplot(f2_plot, aes(x=pop1, y=pop2, fill=est)) +
         axis.text.y=element_text(size=7, colour=label_cols_all))
 
 # Questions: How does the f2 pattern relate to geography and language family?
-# Which populations are most diverged from each other? Which are closest?
+# Which populations are most diverged from each other? Which are closest? ==> African vs non-africans 
+# has the most difference. Inside language groups there is little differentiation.
 # (OPTIONAL) Are there differences in the f2 results computed with different 
-# SNP sets?
+# SNP sets? ==> 
 
 
 # --- 2.3  Pairwise f2 heatmap (modern + ancient populations) ---
@@ -307,7 +308,7 @@ ggplot(f2_all_plot, aes(x=pop1, y=pop2, fill=est)) +
 
 
 # Questions: How do the ancient samples relate to each other?
-# How do they related to the modern samples?
+# How do they related to the modern samples? ==> we can see some pattern of relatedness.
 
 
 # --- 2.4  Pairwise FST among modern populations ---
@@ -384,7 +385,7 @@ ggplot(stats_df, aes(x=f2, y=fst)) +
 
 # Question: Are there populations that recurrently appear in the outlier pairs?
 # Did these populations go through a recent bottleneck?
-
+# ==> F2 very affected by drift -> high fst vs f2 = low heterozygozity (e.g.drift)
 
 ################################################################################
 # PART 3: OUTGROUP F3 STATISTICS — SHARED DRIFT
@@ -480,9 +481,9 @@ ggplot(sa_f3, aes(x=est, y=pop3, shape=is_ancient)) +
   theme_minimal() +
   theme(axis.text.y=element_text(colour=sa_cols))
 
-# Question: Which populations share the most genetic history with South_Africa_2000BP?
+# Question: Which populations share the most genetic history with South_Africa_2000BP? => Khomani
 # What does the ranking tell you about population continuity across space and 
-# time in Africa?
+# time in Africa? => close geography = more shared drift
 
 
 ################################################################################
@@ -512,6 +513,9 @@ neand_f3
 # lacks power at this scale. Common reasons for lack of power include a low 
 # admixture proportion and genetic drift since admixture. This test is most
 # powerful for recent admixture events and high admixture levels (e.g., 20–50%).
+
+# negative F3 = negative value
+# => here: no statistical support for admixture
 
 
 ################################################################################
@@ -646,3 +650,25 @@ par(mar=c(5, 4, 4, 2))
 #   - Petr et al. (2019) PNAS
 #   - ADMIXTOOLS v2 documentation
 ################################################################################
+
+# Exercise: F4 stats for Bantu Tswana (admixture from Khomani?)
+# Pop A Banto kenya
+# Pop B Bantu Tswana
+# Pop C Khomani
+# Pop D Chimp
+
+f2_blocks_strict <- f2_from_geno(prefix, maxmiss = 0,
+                                 pops = c(outgroup, "Khomani",
+                                          "Bantu_Kenya", "Bantu_Tswana"))
+
+Khomani_f4 <- f4(f2_blocks_strict, maxmiss = 0,
+               pop1 = outgroup,
+               pop2 = "Bantu_Tswana",
+               pop3 = "Bantu_Kenya",
+               pop4 = "Khomani")
+
+
+
+
+
+
